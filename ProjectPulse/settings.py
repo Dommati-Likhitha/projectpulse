@@ -5,7 +5,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-change-this-secret'
 DEBUG = False
-ALLOWED_HOSTS = ['*']
+
+ALLOWED_HOSTS = [
+    "web-production-d1630.up.railway.app",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://web-production-d1630.up.railway.app",
+]
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -90,3 +103,4 @@ LOGOUT_REDIRECT_URL = 'home'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
