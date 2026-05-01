@@ -6,9 +6,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-change-this-secret')
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'web-production-d1630.up.railway.app').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'web-production-d1630.up.railway.app,localhost,127.0.0.1').split(',')
 
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'https://web-production-d1630.up.railway.app').split(',')
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'https://web-production-d1630.up.railway.app,http://localhost:8000,http://127.0.0.1:8000').split(',')
 
 CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
@@ -65,6 +65,12 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# Use DATABASE_URL if available (for Railway PostgreSQL)
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.config(default=DATABASE_URL)
 
 AUTH_PASSWORD_VALIDATORS = [
     {

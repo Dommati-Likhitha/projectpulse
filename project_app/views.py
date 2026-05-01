@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Count, Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import ProjectForm, ProjectSubmissionForm, TaskForm, TaskStatusForm, TaskSubmissionForm, UserRegistrationForm
@@ -16,6 +17,32 @@ def get_user_profile(user):
         profile.role = 'admin'
         profile.save()
     return profile
+
+
+def debug_view(request):
+    """Debug view to check system status"""
+    import sys
+    from django.conf import settings
+    
+    debug_info = {
+        'python_version': sys.version,
+        'django_version': settings.VERSION,
+        'debug_mode': settings.DEBUG,
+        'database_engine': settings.DATABASES['default']['ENGINE'],
+        'allowed_hosts': settings.ALLOWED_HOSTS,
+        'csrf_trusted_origins': settings.CSRF_TRUSTED_ORIGINS,
+        'installed_apps': settings.INSTALLED_APPS,
+    }
+    
+    # Test database connection
+    from django.db import connection
+    try:
+        cursor = connection.cursor()
+        debug_info['database_connection'] = 'OK'
+    except Exception as e:
+        debug_info['database_connection'] = f'ERROR: {e}'
+    
+    return JsonResponse(debug_info)
 
 
 def register(request):
