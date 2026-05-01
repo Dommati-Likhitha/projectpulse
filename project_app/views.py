@@ -22,10 +22,17 @@ def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            get_user_profile(user)
-            messages.success(request, 'Account created successfully. You can now sign in.')
-            return redirect('login')
+            try:
+                user = form.save()
+                get_user_profile(user)
+                messages.success(request, 'Account created successfully. You can now sign in.')
+                return redirect('login')
+            except Exception as e:
+                messages.error(request, 'An error occurred during registration. Please try again.')
+                # Log the error for debugging
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f'Registration error: {e}')
     else:
         form = UserRegistrationForm()
     return render(request, 'project_app/register.html', {'form': form})
