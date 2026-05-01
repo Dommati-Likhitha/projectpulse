@@ -30,6 +30,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'ProjectPulse.urls'
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
