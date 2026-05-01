@@ -1,0 +1,17 @@
+{% extends 'project_app/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="auth-card" style="max-width:720px; margin: 40px auto; padding: 36px;">
+    <div class="auth-header">
+        <h1>{{ title }} for {{ project.name }}</h1>
+        <p>{% if user_profile.is_admin %}Admins can assign tasks to team members and track progress.{% else %}Update the task status as you work on it.{% endif %}</p>
+    </div>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary btn-block">Save Task</button>
+    </form>
+    <p class="mt-4"><a href="{% url 'project_detail' project.id %}">Back to project</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'project_app/base.html' %}
+{% block title %}Login - ProjectPulse{% endblock %}
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Welcome Back</h1>
+            <p>Sign in to your ProjectPulse account</p>
+        </div>
+        <form method="post" novalidate class="auth-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">Email or Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="form-error">{{ form.username.errors.0 }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">Password</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <div class="form-error">{{ form.password.errors.0 }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="remember" name="remember" />
+                <label for="remember" class="checkbox-label">Remember me</label>
+            </div>
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+        </form>
+        <div class="auth-footer">
+            <a href="#">Forgot Password?</a>
+        </div>
+        <div class="auth-divider">Don't have an account? <a href="{% url 'register' %}">Create one</a></div>
+    </div>
+</div>
+{% endblock %}

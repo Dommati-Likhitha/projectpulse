@@ -1,0 +1,142 @@
+{% extends 'project_app/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="sidebar-sticky">
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span>Navigation</span>
+                </h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'project_list' %}">
+                            <i class="fas fa-project-diagram"></i> Projects
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'team_management' %}">
+                            <i class="fas fa-users"></i> Team
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">{{ title }}</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'project_list' %}">Projects</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'project_detail' project.id %}">{{ project.name }}</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'task_detail' task.id %}">{{ task.title }}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Submit</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-upload"></i> Submit Task Deliverable
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4 p-3 bg-light rounded">
+                                <h6 class="mb-2">Task Information</h6>
+                                <p class="mb-1"><strong>Task:</strong> {{ task.title }}</p>
+                                <p class="mb-1"><strong>Project:</strong> {{ project.name }}</p>
+                                <p class="mb-1"><strong>Status:</strong> <span class="badge badge-{{ task.status }}">{{ task.get_status_display }}</span></p>
+                                {% if task.due_date %}
+                                <p class="mb-0"><strong>Due Date:</strong> {{ task.due_date|date:"M d, Y" }}</p>
+                                {% endif %}
+                            </div>
+
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="{{ form.task_deliverable.id_for_label }}" class="form-label">
+                                        <i class="fas fa-file-pdf" style="color: #d32f2f;"></i> Task Deliverable (PDF)
+                                    </label>
+                                    {{ form.task_deliverable }}
+                                    <div class="form-text">
+                                        Upload a professional PDF document containing:
+                                        <ul style="margin-top: 8px; margin-bottom: 0;">
+                                            <li>Work completed for this task</li>
+                                            <li>Code snippets or screenshots if applicable</li>
+                                            <li>Testing results and validation</li>
+                                            <li>Notes on approach and decisions</li>
+                                            <li>Any challenges faced and solutions</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a href="{% url 'task_detail' task.id %}" class="btn btn-outline-secondary me-md-2">
+                                        <i class="fas fa-arrow-left"></i> Back to Task
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Submit Deliverable
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-info-circle"></i> Submission Guidelines
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="mb-3">What to Include:</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-3">
+                                    <i class="fas fa-code text-primary me-2"></i>
+                                    <strong>Implementation:</strong>
+                                    <div class="text-muted small mt-1">Code changes, logic explanations</div>
+                                </li>
+                                <li class="mb-3">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>Testing:</strong>
+                                    <div class="text-muted small mt-1">Test cases, results, validation</div>
+                                </li>
+                                <li class="mb-3">
+                                    <i class="fas fa-lightbulb text-warning me-2"></i>
+                                    <strong>Notes:</strong>
+                                    <div class="text-muted small mt-1">Approach, decisions, challenges</div>
+                                </li>
+                            </ul>
+                            <hr>
+                            <div class="bg-light p-2 rounded mb-3">
+                                <p class="small mb-0">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <strong>Pro Tip:</strong> Provide clear, professional documentation to showcase your work.
+                                </p>
+                            </div>
+                            <p class="text-muted small mb-0">
+                                <i class="fas fa-lock"></i> Your deliverables will be visible to project administrators and team leads.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

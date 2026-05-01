@@ -1,0 +1,207 @@
+{% extends 'project_app/base.html' %}
+{% block title %}Dashboard - ProjectPulse{% endblock %}
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-content">
+            <nav class="sidebar-nav">
+                <a href="{% url 'dashboard' %}" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+                <a href="{% url 'project_list' %}" class="nav-item">
+                    <span class="nav-icon">📁</span>
+                    <span class="nav-label">Projects</span>
+                </a>
+                {% if user_profile.is_admin %}
+                <a href="{% url 'team_management' %}" class="nav-item">
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-label">Team</span>
+                </a>
+                <a href="{% url 'admin:index' %}" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">Admin Panel</span>
+                </a>
+                {% else %}
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">✓</span>
+                    <span class="nav-label">My Tasks</span>
+                </a>
+                {% endif %}
+            </nav>
+            <div class="sidebar-divider"></div>
+            {% if user_profile.is_admin %}
+            <a href="{% url 'project_create' %}" class="btn btn-primary btn-block" style="margin-top: 16px;">
+                Create Project
+            </a>
+            {% endif %}
+            <form method="post" action="{% url 'logout' %}" style="margin-top: 24px;">
+                {% csrf_token %}
+                <button type="submit" class="nav-item w-100" style="border: none; background: none; text-align: left; color: #666;">
+                    <span class="nav-icon">🚪</span>
+                    <span class="nav-label">Logout</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <!-- Top Navbar -->
+        <div class="dashboard-header">
+            <div>
+                <h1>Dashboard</h1>
+                <p class="text-muted mb-0" style="font-size: 0.9rem;">
+                    {% if user_profile.is_admin %}
+                        <span class="badge bg-primary">Admin View</span> - Managing all projects and team tasks
+                    {% else %}
+                        <span class="badge bg-secondary">Member View</span> - Your assigned projects and tasks
+                    {% endif %}
+                </p>
+            </div>
+            <div class="header-right">
+                <span class="user-info">👤 {{ user.first_name|default:user.username }}</span>
+            </div>
+        </div>
+
+        <!-- Overview Cards -->
+        <div class="overview-grid">
+            <div class="overview-card">
+                <div class="card-icon">📋</div>
+                <div class="card-content">
+                    <p class="card-label">
+                        {% if user_profile.is_admin %}All Projects{% else %}Your Projects{% endif %}
+                    </p>
+                    <p class="card-value">{{ projects|length }}</p>
+                </div>
+            </div>
+            <div class="overview-card">
+                <div class="card-icon">⚙️</div>
+                <div class="card-content">
+                    <p class="card-label">
+                        {% if user_profile.is_admin %}All Active Tasks{% else %}Your Active Tasks{% endif %}
+                    </p>
+                    <p class="card-value">{{ status_summary.in_progress }}</p>
+                </div>
+            </div>
+            <div class="overview-card">
+                <div class="card-icon">✅</div>
+                <div class="card-content">
+                    <p class="card-label">
+                        {% if user_profile.is_admin %}All Completed{% else %}Your Completed{% endif %}
+                    </p>
+                    <p class="card-value">{{ status_summary.done }}</p>
+                </div>
+            </div>
+            <div class="overview-card alert-card">
+                <div class="card-icon">⚠️</div>
+                <div class="card-content">
+                    <p class="card-label">
+                        {% if user_profile.is_admin %}All Overdue{% else %}Your Overdue{% endif %}
+                    </p>
+                    <p class="card-value">{{ overdue_tasks|length }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Status Summary -->
+        <div class="summary-section">
+            <div class="summary-card">
+                <h3>Task Status Summary</h3>
+                <div class="status-list">
+                    <div class="status-item">
+                        <span class="status-badge pending"></span>
+                        <span class="status-text">Pending</span>
+                        <span class="status-count">{{ status_summary.pending }}</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-badge in-progress"></span>
+                        <span class="status-text">In Progress</span>
+                        <span class="status-count">{{ status_summary.in_progress }}</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-badge done"></span>
+                        <span class="status-text">Done</span>
+                        <span class="status-count">{{ status_summary.done }}</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if overdue_tasks %}
+            <div class="summary-card alert-section">
+                <h3>⚠️ Overdue Tasks</h3>
+                <ul class="overdue-list">
+                    {% for task in overdue_tasks|slice:":5" %}
+                    <li>
+                        <a href="{% url 'task_detail' task.id %}" class="task-link">{{ task.title }}</a>
+                        <span class="task-project">{{ task.project.name }}</span>
+                        <span class="task-date">Due {{ task.due_date }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if user_profile.is_admin %}
+        <!-- Admin Management Section -->
+        <div class="summary-section">
+            <div class="summary-card">
+                <h3>👑 Admin Controls</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px;">
+                    <a href="{% url 'project_create' %}" class="btn btn-primary">
+                        <span style="font-size: 1.2rem; margin-right: 8px;">➕</span>
+                        Create Project
+                    </a>
+                    <a href="{% url 'admin:index' %}" class="btn btn-secondary">
+                        <span style="font-size: 1.2rem; margin-right: 8px;">⚙️</span>
+                        Manage Users
+                    </a>
+                    <a href="{% url 'project_list' %}" class="btn btn-outline-primary">
+                        <span style="font-size: 1.2rem; margin-right: 8px;">📁</span>
+                        All Projects
+                    </a>
+                </div>
+                <div style="margin-top: 16px; padding: 12px; background: #f0f4ff; border-radius: 8px; border-left: 4px solid #4F46E5;">
+                    <strong>Admin Privileges:</strong> You can view and manage all projects, tasks, and team members across the organization.
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Recent Tasks Table -->
+        <div class="table-section">
+            <h3>
+                {% if user_profile.is_admin %}Recent Tasks (All){% else %}My Tasks{% endif %}
+            </h3>
+            {% if tasks %}
+            <table class="tasks-table">
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Project</th>
+                        <th>Status</th>
+                        <th>Due Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks|slice:":10" %}
+                    <tr>
+                        <td><a href="{% url 'task_detail' task.id %}">{{ task.title }}</a></td>
+                        <td>{{ task.project.name }}</td>
+                        <td>
+                            <span class="badge badge-{{ task.status }}">{{ task.get_status_display }}</span>
+                        </td>
+                        <td>{{ task.due_date|default:"—" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty-state">No tasks assigned yet.</p>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends 'project_app/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="sidebar-sticky">
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span>Navigation</span>
+                </h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'project_list' %}">
+                            <i class="fas fa-project-diagram"></i> Projects
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'team_management' %}">
+                            <i class="fas fa-users"></i> Team
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">{{ title }}</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'project_list' %}">Projects</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'project_detail' project.id %}">{{ project.name }}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Submit</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-upload"></i> Submit Project Links & Documentation
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="{{ form.github_link.id_for_label }}" class="form-label">
+                                        <i class="fab fa-github"></i> GitHub Repository Link
+                                    </label>
+                                    {{ form.github_link }}
+                                    <div class="form-text">Enter the complete URL of your GitHub repository.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.live_project_link.id_for_label }}" class="form-label">
+                                        <i class="fas fa-globe"></i> Live Project Link
+                                    </label>
+                                    {{ form.live_project_link }}
+                                    <div class="form-text">Enter the URL where the live, deployed project can be accessed.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.project_documentation.id_for_label }}" class="form-label">
+                                        <i class="fas fa-file-pdf" style="color: #d32f2f;"></i> Project Documentation (PDF)
+                                    </label>
+                                    {{ form.project_documentation }}
+                                    <div class="form-text">
+                                        Upload a professional PDF document containing:
+                                        <ul style="margin-top: 8px; margin-bottom: 0;">
+                                            <li>Project overview and objectives</li>
+                                            <li>Setup and installation instructions</li>
+                                            <li>Feature documentation and usage guide</li>
+                                            <li>Technology stack and dependencies</li>
+                                            <li>Development notes and future enhancements</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a href="{% url 'project_detail' project.id %}" class="btn btn-outline-secondary me-md-2">
+                                        <i class="fas fa-arrow-left"></i> Back to Project
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Submit
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-info-circle"></i> Submission Guidelines
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li class="mb-3">
+                                    <i class="fab fa-github text-primary me-2"></i>
+                                    <strong>GitHub Repository:</strong>
+                                    <div class="text-muted small mt-1">Your source code repository link</div>
+                                </li>
+                                <li class="mb-3">
+                                    <i class="fas fa-globe text-info me-2"></i>
+                                    <strong>Live Project URL:</strong>
+                                    <div class="text-muted small mt-1">Where your project is deployed</div>
+                                </li>
+                                <li class="mb-3">
+                                    <i class="fas fa-file-pdf text-danger me-2"></i>
+                                    <strong>Documentation (PDF):</strong>
+                                    <div class="text-muted small mt-1">Professional PDF with complete project details</div>
+                                </li>
+                            </ul>
+                            <hr>
+                            <div class="bg-light p-2 rounded mb-3">
+                                <p class="small mb-0">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <strong>Pro Tip:</strong> Create comprehensive documentation to showcase your project professionally.
+                                </p>
+                            </div>
+                            <p class="text-muted small mb-0">
+                                <i class="fas fa-lock"></i> Your submissions will be visible only to project administrators.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

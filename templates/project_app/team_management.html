@@ -1,0 +1,48 @@
+{% extends 'project_app/base.html' %}
+{% block title %}Team Management - ProjectPulse{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="projects-header">
+        <div>
+            <h1>Team Management</h1>
+            <p class="text-muted mb-0" style="font-size: 0.95rem;">
+                Manage user roles and promote team members to Admin or Member.
+            </p>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <h3>User Roles</h3>
+        <table class="tasks-table" style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email|default:'—' }}</td>
+                        <td>{{ user.profile.get_role_display }}</td>
+                        <td>
+                            <form method="post" style="display:inline-flex; gap:10px; align-items:center;">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ user.id }}" />
+                                <select name="role" class="form-select" style="width: 160px;">
+                                    <option value="admin" {% if user.profile.role == 'admin' %}selected{% endif %}>Admin</option>
+                                    <option value="member" {% if user.profile.role == 'member' %}selected{% endif %}>Member</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

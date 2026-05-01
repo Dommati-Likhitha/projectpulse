@@ -1,0 +1,79 @@
+{% extends 'project_app/base.html' %}
+{% block title %}{{ task.title }}{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 32px;">
+        <div style="flex: 1;">
+            <h1 style="margin: 0 0 8px 0;">{{ task.title }}</h1>
+            <p style="color: #666; margin: 0; font-size: 0.95rem;"><a href="{% url 'project_detail' task.project.id %}" style="color: #4F46E5; text-decoration: none;">{{ task.project.name }}</a></p>
+        </div>
+        {% if user_profile.is_admin or task.assignee == user %}
+        <div style="display: flex; gap: 12px;">
+            <a href="{% url 'task_update' task.id %}" class="btn btn-secondary btn-sm">Edit</a>
+            {% if task.assignee == user and not task.task_deliverable %}
+            <a href="{% url 'task_submit' task.id %}" class="btn btn-success btn-sm">Submit Deliverable</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 24px;">
+            <div>
+                <p style="color: #999; font-size: 0.85rem; margin: 0 0 8px 0; text-transform: uppercase; font-weight: 600;">Assignee</p>
+                <p style="color: #1a1a2e; font-size: 1.1rem; font-weight: 600; margin: 0;">
+                    {% if task.assignee %}
+                        <i class="fas fa-user-circle"></i> {{ task.assignee.username }}
+                    {% else %}
+                        Unassigned
+                    {% endif %}
+                </p>
+            </div>
+            <div>
+                <p style="color: #999; font-size: 0.85rem; margin: 0 0 8px 0; text-transform: uppercase; font-weight: 600;">Status</p>
+                <p style="color: #1a1a2e; font-size: 1.1rem; font-weight: 600; margin: 0;">
+                    <span class="badge badge-{{ task.status }}">{{ task.get_status_display }}</span>
+                </p>
+            </div>
+            {% if task.due_date %}
+            <div>
+                <p style="color: #999; font-size: 0.85rem; margin: 0 0 8px 0; text-transform: uppercase; font-weight: 600;">Due Date</p>
+                <p style="color: #1a1a2e; font-size: 1.1rem; font-weight: 600; margin: 0;">📅 {{ task.due_date|date:"M d, Y" }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if task.description %}
+        <div style="margin-bottom: 20px;">
+            <p style="color: #999; font-size: 0.85rem; margin: 0 0 8px 0; text-transform: uppercase; font-weight: 600;">Description</p>
+            <p style="color: #666; line-height: 1.6; margin: 0;">{{ task.description|linebreaks }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if task.task_deliverable %}
+    <div style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <h3 style="margin-top: 0;">📎 Task Deliverable</h3>
+        <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                <i class="fas fa-file-pdf" style="color: #d32f2f; font-size: 1.2rem;"></i>
+                <span style="font-weight: 600; color: #333;">Task Deliverable</span>
+            </div>
+            <a href="{{ task.task_deliverable.url }}" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; color: #4F46E5; text-decoration: none; padding: 8px 12px; background: #f0f4ff; border-radius: 6px; font-weight: 500;">
+                <i class="fas fa-download"></i>
+                Download PDF ({{ task.task_deliverable.name|slice:"-30:" }})
+            </a>
+        </div>
+    </div>
+    {% elif task.assignee == user %}
+    <div style="background: white; border-radius: 12px; padding: 24px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <i class="fas fa-upload" style="font-size: 3rem; color: #999; margin-bottom: 16px; display: block;"></i>
+        <h4 style="color: #666; margin-bottom: 8px;">Ready to Submit Your Work?</h4>
+        <p style="color: #999; margin-bottom: 16px;">Upload a PDF document with your task deliverables and work completed.</p>
+        <a href="{% url 'task_submit' task.id %}" class="btn btn-success">
+            <i class="fas fa-upload"></i> Submit Deliverable
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
