@@ -4,7 +4,7 @@ import sys
 
 # Setup Django
 sys.path.append(os.path.dirname(__file__))
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ethara_project.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ProjectPulse.settings')
 django.setup()
 
 from django.contrib.auth import get_user_model
